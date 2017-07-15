@@ -1,6 +1,9 @@
 import base64
 import requests
 from requests_oauthlib import OAuth1
+from urlparse import urlparse,parse_qs
+import urllib
+import json
 
 
 apiKey = "P9HvIxlPA2luSxEzdq0g5iznR"
@@ -18,4 +21,14 @@ headers = {
 
 response = requests.request("POST", url, headers=headers, params=None)
 
-print(response.text)
+print response.text
+
+OAuthSecret =  str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token_secret'])
+OAuthToken = str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token'])
+OAuthSecret = OAuthSecret[2:-2]
+OAuthToken = OAuthToken[2:-2]
+
+print OAuthSecret,OAuthToken
+
+
+
