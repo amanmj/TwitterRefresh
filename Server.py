@@ -37,11 +37,19 @@ def makeRequest(OAuthToken,OAuthVerifier):
                    resource_owner_secret=secret[2:-2]
                    )
 
-	tweetsUrl = "https://api.twitter.com/1.1/account/verify_credentials.json"
+	tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 
 	response = requests.get(url=tweetsUrl,auth=oauth)
 
-	return response.content
+	deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(880429316663779328) + ".json"
+	
+	params = {'id':880429316663779328}
+	deleteResponse = requests.post(url=deleteUrl,params=params, auth=oauth)
+	
+
+	print deleteResponse.content
+
+	return json.dumps(response.content)
 
 
 
@@ -51,7 +59,7 @@ def data():
 	    OAuthToken = request.args.get('oauth_token')
 	    OAuthVerifier = request.args.get('oauth_verifier')
 	    x = makeRequest(OAuthToken,OAuthVerifier)
-	    return json.dumps({"tweets":x})
+	    return x
 	    #return json.dumps({"oauthtoken":OAuthToken,"oauthverifier":OAuthVerifier})    
 
 	except:
