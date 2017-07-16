@@ -17,7 +17,6 @@ def makeRequest(OAuthToken,OAuthVerifier):
 	url = "https://api.twitter.com/oauth/access_token"
 
 	oauth = OAuth1(apiKey,
-                   client_secret=apiSecret,
                    resource_owner_key=OAuthToken,
                    resource_owner_secret=OAuthSecret,
                    verifier=OAuthVerifier)
@@ -32,7 +31,6 @@ def makeRequest(OAuthToken,OAuthVerifier):
 	name = str(parse_qs(urlparse('?'+str(response.content)).query)['screen_name'])
 
 	oauth = OAuth1(apiKey,
-                   client_secret=apiSecret,
                    resource_owner_key=token[2:-2],
                    resource_owner_secret=secret[2:-2]
                    )
