@@ -7,90 +7,99 @@ from requests_oauthlib import OAuth1
 import webbrowser
 
 app = Flask(__name__)
+
 apiKey = "P9HvIxlPA2luSxEzdq0g5iznR"
 apiSecret = "nUZ8NkT0Lxf08whUCm30O87yeYHQzEA3VQcioLrF4VJg89mziK"
 
+requestTokenUrl = "https://api.twitter.com/oauth/request_token"
+tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
+accessTokenUrl = "https://api.twitter.com/oauth/access_token"
+
 OAuthSecret = ""
-
-
-def makeRequest(OAuthToken,OAuthVerifier):
-	url = "https://api.twitter.com/oauth/access_token"
-
-	oauth = OAuth1(apiKey,
-                   resource_owner_key = OAuthToken,
-                   resource_owner_secret = OAuthSecret,
-                   verifier = OAuthVerifier)
-
-	response = requests.post(url=url, auth=oauth)
-	
-	token = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token'])
-	secret = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token_secret'])
-	userId = str(parse_qs(urlparse('?'+str(response.content)).query)['user_id'])
-	name = str(parse_qs(urlparse('?'+str(response.content)).query)['screen_name'])
-
-	oauth = OAuth1(apiKey,
-					client_secret = apiSecret,
-                   resource_owner_key = token[2:-2],
-                   resource_owner_secret = secret[2:-2]
-                   )
-
-	tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-
-	response = requests.get(url=tweetsUrl,auth=oauth)
-
-	jsonTweets = json.dumps(response.text)
-
-	return json.loads(response.text),oauth
 
 def deleteTweetsFromIdList(textInTweet,tweetIdList,oauth):
 	count = 0 
-	for ids in tweetIdList:
-		deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(ids) + ".json"
-		params = {'id':ids}
-		deleteResponse = requests.post(url=deleteUrl , params=params, auth=oauth)
-		print "Deleted tweet : " + str(textInTweet[count])
-		count = count + 1
+	try:
+		for tweetId in tweetIdList:
+			print "Deleting tweet with ID : " + str(tweetId)
+			deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(tweetId) + ".json"
+			params = {'id':tweetId}
+			deleteResponse = requests.post(url=deleteUrl , params=params, auth=oauth)
+			print "Deleted Tweet : " + str(textInTweet[count])
+			count = count + 1
+	except:
+		"Exception in traversing tweets"
+	
 	return count
-
 
 @app.route('/')
 def data():
 	try:
 		deletions = 0
+		OAuthToken = request.args.get('oauth_token')
+		OAuthVerifier = request.args.get('oauth_verifier')
+		oauth = OAuth1(apiKey,
+                   resource_owner_key = OAuthToken,
+                   resource_owner_secret = OAuthSecret,
+                   verifier = OAuthVerifier)
+
+		response = requests.post(url=accessTokenUrl, auth=oauth)
+
+		token = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token'])
+		secret = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token_secret'])
+		userId = str(parse_qs(urlparse('?'+str(response.content)).query)['user_id'])
+		name = str(parse_qs(urlparse('?'+str(response.content)).query)['screen_name'])
+
 		
 		while True:
-		  	OAuthToken = request.args.get('oauth_token')
-			OAuthVerifier = request.args.get('oauth_verifier')
-		  	x,oauth = makeRequest(OAuthToken,OAuthVerifier)
-		  	print x
+
+		  	oauth = OAuth1(apiKey,
+					client_secret = apiSecret,
+                   resource_owner_key = token[2:-2],
+                   resource_owner_secret = secret[2:-2]
+                   )
+		  	response = requests.get(url=tweetsUrl,auth=oauth)
+
+			jsonTweets = json.dumps(response.text)
+
+		  	twitterJsonResponse = json.loads(response.text)
+		  	print json.dumps({"tweets":twitterJsonResponse})
+		  	print ""
+		  	print ""
+		  	print ""
+		  	print ""
 
 			tweetIdList = []
 			textInTweet = []
 
-		 	for i in x:
-				tweetIdList.append(i['id'])
-		    	textInTweet.append(i['text'])
+			if not twitterJsonResponse:
+				break
+
+		 	for tweets in twitterJsonResponse:
+				tweet =  str(tweets['text'])
+				try:
+					textInTweet.append(tweet)
+					tweetIdList.append(tweets['id'])
+				except:
+					print "Could not append data to list"
 		    
-			if(len(tweetIdList) == 0):
-				break;
-		    
-			deletions = deletions + deleteTweetsFromIdList(textInTweet,tweetIdList,oauth)
-			print deletions
+			numberOfTweetsDeleted = deleteTweetsFromIdList(textInTweet,tweetIdList,oauth)
+
+			deletions = deletions + numberOfTweetsDeleted
 	    	
 		return json.dumps({"response":"true","Deleted tweets":deletions})
 
 	except:
 		return json.dumps({"response":"false","message":"something went wrong"})
 
-@app.route('/test')
+@app.route('/twitter')
 def make():
-	url = "https://api.twitter.com/oauth/request_token"
-
+	
 	headers = {
     	'authorization': "OAuth oauth_consumer_key=\"P9HvIxlPA2luSxEzdq0g5iznR\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1500130533\",oauth_nonce=\"bpvFNDzBbJ3\",oauth_version=\"1.0\",oauth_signature=\"NuR91jXE%2BCzxHAPVoTcsIj8F8xw%3D\"",
     }
 
-	response = requests.request("POST", url, headers=headers, params=None)
+	response = requests.request("POST", requestTokenUrl, headers=headers, params=None)
 
 	OAuthSecret =  str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token_secret'])
 	OAuthToken = str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token'])
@@ -119,8 +128,7 @@ def make():
 	except:
 		print "You don't use linux!"
 
-	return json.dumps({"oauthtoken":OAuthToken,"oauthsecret":OAuthSecret}) 
-
+	return json.dumps({"response":"true","message":"Please Authorize the TwitterRefresh App to Proceed Further"}) 
 
 if __name__ == '__main__':
 	app.run(debug=True,threaded=True)
