@@ -17,9 +17,9 @@ def makeRequest(OAuthToken,OAuthVerifier):
 	url = "https://api.twitter.com/oauth/access_token"
 
 	oauth = OAuth1(apiKey,
-                   resource_owner_key=OAuthToken,
-                   resource_owner_secret=OAuthSecret,
-                   verifier=OAuthVerifier)
+                   resource_owner_key = OAuthToken,
+                   resource_owner_secret = OAuthSecret,
+                   verifier = OAuthVerifier)
 
 	response = requests.post(url=url, auth=oauth)
 	
@@ -31,8 +31,9 @@ def makeRequest(OAuthToken,OAuthVerifier):
 	name = str(parse_qs(urlparse('?'+str(response.content)).query)['screen_name'])
 
 	oauth = OAuth1(apiKey,
-                   resource_owner_key=token[2:-2],
-                   resource_owner_secret=secret[2:-2]
+					client_secret = apiSecret,
+                   resource_owner_key = token[2:-2],
+                   resource_owner_secret = secret[2:-2]
                    )
 
 	tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
