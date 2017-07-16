@@ -23,8 +23,6 @@ def makeRequest(OAuthToken,OAuthVerifier):
 
 	response = requests.post(url=url, auth=oauth)
 	
-	print(response.content)
-
 	token = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token'])
 	secret = str(parse_qs(urlparse('?'+str(response.content)).query)['oauth_token_secret'])
 	userId = str(parse_qs(urlparse('?'+str(response.content)).query)['user_id'])
@@ -40,29 +38,49 @@ def makeRequest(OAuthToken,OAuthVerifier):
 
 	response = requests.get(url=tweetsUrl,auth=oauth)
 
-	deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(880429316663779328) + ".json"
-	
-	params = {'id':880429316663779328}
-	deleteResponse = requests.post(url=deleteUrl,params=params, auth=oauth)
-	
+	jsonTweets = json.dumps(response.text)
 
-	print deleteResponse.content
+	return json.loads(response.text),oauth
 
-	return json.dumps(response.content)
-
+def deleteTweetsFromIdList(textInTweet,tweetIdList,oauth):
+	count = 0 
+	for ids in tweetIdList:
+		deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(ids) + ".json"
+		params = {'id':ids}
+		deleteResponse = requests.post(url=deleteUrl , params=params, auth=oauth)
+		print "Deleted tweet : " + str(textInTweet[count])
+		count = count + 1
+	return count
 
 
 @app.route('/')
 def data():
 	try:
-	    OAuthToken = request.args.get('oauth_token')
-	    OAuthVerifier = request.args.get('oauth_verifier')
-	    x = makeRequest(OAuthToken,OAuthVerifier)
-	    return x
-	    #return json.dumps({"oauthtoken":OAuthToken,"oauthverifier":OAuthVerifier})    
+		deletions = 0
+		
+		while True:
+		  	OAuthToken = request.args.get('oauth_token')
+			OAuthVerifier = request.args.get('oauth_verifier')
+		  	x,oauth = makeRequest(OAuthToken,OAuthVerifier)
+		  	print x
+
+			tweetIdList = []
+			textInTweet = []
+
+		 	for i in x:
+				tweetIdList.append(i['id'])
+		    	textInTweet.append(i['text'])
+		    
+			if(len(tweetIdList) == 0):
+				break;
+		    
+			deletions = deletions + deleteTweetsFromIdList(textInTweet,tweetIdList,oauth)
+			print deletions
+	    	
+		return json.dumps({"response":"true","Deleted tweets":deletions})
 
 	except:
-		return json.dumps({"response":"false"})
+		return json.dumps({"response":"false","message":"something went wrong"})
 
 @app.route('/test')
 def make():
