@@ -5,6 +5,7 @@ from urlparse import urlparse,parse_qs
 import urllib
 from requests_oauthlib import OAuth1
 import webbrowser
+import unicodedata
 
 app = Flask(__name__)
 
@@ -63,7 +64,7 @@ def data():
 			jsonTweets = json.dumps(response.text)
 
 		  	twitterJsonResponse = json.loads(response.text)
-		  	print json.dumps({"tweets":twitterJsonResponse})
+		  	#print json.dumps({"tweets":twitterJsonResponse})
 		  	print ""
 		  	print ""
 		  	print ""
@@ -76,12 +77,12 @@ def data():
 				break
 
 		 	for tweets in twitterJsonResponse:
-				tweet =  str(tweets['text'])
+				tweetIdList.append(str(tweets['id']))
 				try:
+					tweet =  str(tweets['text'])
 					textInTweet.append(tweet)
-					tweetIdList.append(tweets['id'])
 				except:
-					print "Could not append data to list"
+					textInTweet.append("Some Tweet")
 		    
 			numberOfTweetsDeleted = deleteTweetsFromIdList(textInTweet,tweetIdList,oauth)
 
