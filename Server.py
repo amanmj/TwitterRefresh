@@ -95,11 +95,11 @@ def data():
 @app.route('/twitter')
 def make():
 	
-	headers = {
-    	'authorization': "OAuth oauth_consumer_key=\"P9HvIxlPA2luSxEzdq0g5iznR\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1500130533\",oauth_nonce=\"bpvFNDzBbJ3\",oauth_version=\"1.0\",oauth_signature=\"NuR91jXE%2BCzxHAPVoTcsIj8F8xw%3D\"",
-    }
+	oauth = OAuth1(apiKey,
+					client_secret = apiSecret 
+                   )
 
-	response = requests.request("POST", requestTokenUrl, headers=headers, params=None)
+	response = requests.post(url=requestTokenUrl, auth=oauth)
 
 	OAuthSecret =  str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token_secret'])
 	OAuthToken = str(parse_qs(urlparse('?'+str(response.text)).query)['oauth_token'])
