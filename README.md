@@ -2,7 +2,6 @@
 
 ## Delete all your tweets & replies within a couple of minutes!
 
-Inline-style: 
 ![alt text](https://github.com/amanmj/TwitterRefresh/blob/master/GIF/myGif.gif "Sample Demo")
 
 
