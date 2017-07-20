@@ -5,12 +5,11 @@ from urlparse import urlparse,parse_qs
 import urllib
 from requests_oauthlib import OAuth1
 import webbrowser
-import unicodedata
 
 app = Flask(__name__)
 
-apiKey = "P9HvIxlPA2luSxEzdq0g5iznR"
-apiSecret = "nUZ8NkT0Lxf08whUCm30O87yeYHQzEA3VQcioLrF4VJg89mziK"
+apiKey = "ENTER API KEY"
+apiSecret = "ENTER API SECRET"
 
 requestTokenUrl = "https://api.twitter.com/oauth/request_token"
 tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
