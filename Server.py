@@ -63,12 +63,11 @@ def data():
 			jsonTweets = json.dumps(response.text)
 
 		  	twitterJsonResponse = json.loads(response.text)
-		  	#print json.dumps({"tweets":twitterJsonResponse})
-		  	print ""
-		  	print ""
-		  	print ""
-		  	print ""
-
+			
+			for(int i=0i<4;i++){
+				print ""
+			}
+		  	
 			tweetIdList = []
 			textInTweet = []
 
