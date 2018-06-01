@@ -18,18 +18,18 @@ accessTokenUrl = "https://api.twitter.com/oauth/access_token"
 OAuthSecret = ""
 
 def deleteTweetsFromIdList(textInTweet,tweetIdList,oauth):
-	count = 0 
+	count = 0
 	try:
 		for tweetId in tweetIdList:
 			print "Deleting tweet with ID : " + str(tweetId)
 			deleteUrl = "https://api.twitter.com/1.1/statuses/destroy/" + str(tweetId) + ".json"
-			params = {'id':tweetId}
+			params = {'id': tweetId}
 			deleteResponse = requests.post(url=deleteUrl , params=params, auth=oauth)
 			print "Deleted Tweet : " + str(textInTweet[count])
 			count = count + 1
 	except:
 		"Exception in traversing tweets"
-	
+
 	return count
 
 @app.route('/')
@@ -50,7 +50,7 @@ def data():
 		userId = str(parse_qs(urlparse('?'+str(response.content)).query)['user_id'])
 		name = str(parse_qs(urlparse('?'+str(response.content)).query)['screen_name'])
 
-		
+
 		while True:
 
 		  	oauth = OAuth1(apiKey,
@@ -64,7 +64,7 @@ def data():
 
 		  	twitterJsonResponse = json.loads(response.text)
 		  	#print json.dumps({"tweets":twitterJsonResponse})
-			
+
 			for x in range(3):
 		  		print ""
 
@@ -81,11 +81,11 @@ def data():
 					textInTweet.append(tweet)
 				except:
 					textInTweet.append("Some Tweet")
-		    
+
 			numberOfTweetsDeleted = deleteTweetsFromIdList(textInTweet,tweetIdList,oauth)
 
 			deletions = deletions + numberOfTweetsDeleted
-	    	
+
 		return json.dumps({"response":"true","Deleted tweets":deletions})
 
 	except:
@@ -93,9 +93,9 @@ def data():
 
 @app.route('/twitter')
 def make():
-	
+
 	oauth = OAuth1(apiKey,
-					client_secret = apiSecret 
+					client_secret = apiSecret
                    )
 
 	response = requests.post(url=requestTokenUrl, auth=oauth)
@@ -119,7 +119,7 @@ def make():
 
 	except:
 		print "You don't use windows!"
-	
+
 	# Linux
 	try:
 		chrome_path = '/usr/bin/google-chrome %s'
@@ -127,7 +127,7 @@ def make():
 	except:
 		print "You don't use linux!"
 
-	return json.dumps({"response":"true","message":"Please Authorize the TwitterRefresh App to Proceed Further"}) 
+	return json.dumps({"response":"true","message":"Please Authorize the TwitterRefresh App to Proceed Further"})
 
 if __name__ == '__main__':
 	app.run(debug=True,threaded=True)

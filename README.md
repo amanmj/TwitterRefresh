@@ -4,10 +4,7 @@
 
 ![alt text](https://github.com/amanmj/TwitterRefresh/blob/master/GIF/myGif.gif "Sample Demo")
 
-
-
 How to use ?
-
 
 1. Clone this repository using ```git clone https://github.com/amanmj/TwitterRefresh ```
 2. Enter this repo using ``` cd TwitterRefresh```
