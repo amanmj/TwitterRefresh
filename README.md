@@ -7,7 +7,7 @@
 How to use ?
 
 1. Clone this repository using ```git clone https://github.com/amanmj/TwitterRefresh ```
-2. Enter this repo using ``` cd TwitterRefresh```
+2. Enter this repo using ```cd TwitterRefresh```
 3. ```pip install -r requirements.txt```
 4. Create a new twitter app from https://dev.twitter.com/
 5. Open Server.py and enter your key and secret corresponding to ```apiKey``` and ```apiSecret```
