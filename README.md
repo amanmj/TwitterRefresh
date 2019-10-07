@@ -14,4 +14,4 @@ How to use ?
 6. Set up your twitter app and enter the endpoint where you will be running the code
 7. Run ```python Server.py```
 8. Open http://localhost:5000/twitter and proceed
-9. Keep a watch on your terminal
+9. Keep a watch on your terminal.
