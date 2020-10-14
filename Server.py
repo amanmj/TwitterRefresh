@@ -16,7 +16,7 @@ tweetsUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 accessTokenUrl = "https://api.twitter.com/oauth/access_token"
 
 OAuthSecret = ""
-
+#Used for authentication
 def deleteTweetsFromIdList(textInTweet,tweetIdList,oauth):
 	count = 0
 	try:
